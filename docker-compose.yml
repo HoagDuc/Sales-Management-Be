@@ -1,0 +1,43 @@
+﻿version: '3.8'
+
+networks:
+  dev:
+    driver: bridge
+services:
+  ptdn_net:
+    image: ptdn_net
+    depends_on:
+      - 'ptdn_db'
+    container_name: ptdn_net
+    ports:
+      - '5136:80'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ConnectionStrings__PostgresqlConnectionStr=User ID=ptdn_user;Password=2Uyi4JEzayb93b3VFkRukf363cuyeBzx;Host=clf32hjl00ks739vfrqg-a.singapore-postgres.render.com;Port=5432;Database=ptdn_db;Pooling=true
+      - JwtConfig__Issuer=https://localhost:7183
+      - JwtConfig__Audience=https://localhost:3000
+      - JwtConfig__SecretKey=SDFASDdsfsdkfoi3249rfmASDFetofoip32094u32476tchSADAFi23o487kdjkjfh
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - dev
+
+  ptdn_db:
+    image: postgres:latest
+    container_name: ptdn_db
+    environment:
+      - POSTGRES_HOST=ptdn_db
+      - POSTGRES_USER=ptdn_user
+      - POSTGRES_PASSWORD=ptdn_password
+      - POSTGRES_DB=ptdn_db
+    ports:
+      - '5432:5432'
+    restart: always
+    volumes:
+      - app_data:/var/lib/postgresql/data
+    networks:
+      - dev
+
+volumes:
+  app_data:
